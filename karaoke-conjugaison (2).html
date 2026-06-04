@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Karaoké des Chansons de Conjugaison</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --song1: #FF6B6B;
+    --song2: #4ECDC4;
+    --song3: #FFE66D;
+    --song4: #A29BFE;
+    --song5: #FD79A8;
+    --dark: #2d2d2d;
+    --white: #fff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* STARS BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 40%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(2px 2px at 20% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 90% 30%, rgba(255,255,255,0.6) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+  }
+
+  header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+  }
+
+  header h1 span {
+    display: inline-block;
+    animation: bounce 1.2s infinite alternate;
+  }
+  header h1 span:nth-child(2) { animation-delay: 0.1s; color: var(--song1); }
+  header h1 span:nth-child(3) { animation-delay: 0.2s; color: var(--song2); }
+  header h1 span:nth-child(4) { animation-delay: 0.3s; color: var(--song3); }
+  header h1 span:nth-child(5) { animation-delay: 0.4s; color: var(--song4); }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-6px); }
+  }
+
+  header p {
+    color: rgba(255,255,255,0.6);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  /* TABS */
+  .tabs {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding: 0 1rem 1.5rem;
+  }
+
+  .tab-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    padding: 0.6rem 1.4rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    border: 2px solid transparent;
+    letter-spacing: 0.5px;
+  }
+
+  .tab-btn:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+  }
+
+  .tab-btn.active-1 { background: var(--song1); color: #fff; border-color: var(--song1); box-shadow: 0 0 20px rgba(255,107,107,0.5); }
+  .tab-btn.active-2 { background: var(--song2); color: var(--dark); border-color: var(--song2); box-shadow: 0 0 20px rgba(78,205,196,0.5); }
+  .tab-btn.active-3 { background: var(--song3); color: var(--dark); border-color: var(--song3); box-shadow: 0 0 20px rgba(255,230,109,0.5); }
+  .tab-btn.active-4 { background: var(--song4); color: #fff; border-color: var(--song4); box-shadow: 0 0 20px rgba(162,155,254,0.5); }
+  .tab-btn.active-5 { background: var(--song5); color: #fff; border-color: var(--song5); box-shadow: 0 0 20px rgba(253,121,168,0.5); }
+
+  /* SONG PANELS */
+  .song-panel {
+    display: none;
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    padding: 0 1.2rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .song-panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .song-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 2rem 2.5rem;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .song-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px dashed rgba(255,255,255,0.15);
+  }
+
+  .song-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .song-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .panel-1 .song-title { color: var(--song1); }
+  .panel-2 .song-title { color: var(--song2); }
+  .panel-3 .song-title { color: var(--song3); }
+  .panel-4 .song-title { color: var(--song4); }
+  .panel-5 .song-title { color: var(--song5); }
+
+  .song-subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  /* LYRICS */
+  .lyrics {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .block {
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    border-left: 4px solid transparent;
+  }
+
+  .panel-1 .block { border-left-color: var(--song1); }
+  .panel-2 .block { border-left-color: var(--song2); }
+  .panel-3 .block { border-left-color: var(--song3); }
+  .panel-4 .block { border-left-color: var(--song4); }
+  .panel-5 .block { border-left-color: var(--song5); }
+
+  .block-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.7rem;
+    opacity: 0.5;
+    color: #fff;
+  }
+
+  .block p {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    font-weight: 600;
+  }
+
+  .block p strong {
+    font-size: 1.1em;
+  }
+
+  .panel-1 .block p strong { color: var(--song1); }
+  .panel-2 .block p strong { color: var(--song2); }
+  .panel-3 .block p strong { color: var(--song3); }
+  .panel-4 .block p strong { color: var(--song4); }
+  .panel-5 .block p strong { color: var(--song5); }
+
+  .refrain-block {
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    border: 2px solid rgba(255,255,255,0.15);
+    text-align: center;
+  }
+
+  .refrain-block p {
+    color: rgba(255,255,255,0.95);
+    font-size: 1.1rem;
+    line-height: 2;
+    font-weight: 700;
+  }
+
+  .panel-1 .refrain-block p strong { color: var(--song1); }
+  .panel-2 .refrain-block p strong { color: var(--song2); }
+  .panel-3 .refrain-block p strong { color: var(--song3); }
+  .panel-4 .refrain-block p strong { color: var(--song4); }
+  .panel-5 .refrain-block p strong { color: var(--song5); }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 1.5rem;
+    color: rgba(255,255,255,0.25);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 600px) {
+    .song-card { padding: 1.5rem 1.2rem; }
+    .tab-btn { font-size: 0.85rem; padding: 0.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    🎵
+    <span>K</span><span>a</span><span>r</span><span>a</span><span>o</span><span>k</span><span>é</span>
+    des Chansons de Conjugaison
+  </h1>
+  <p>Clique sur une chanson pour voir les paroles ✨</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active-1" onclick="showSong(1)">🔴 L'Imparfait</button>
+  <button class="tab-btn" onclick="showSong(2)">🟢 Les Verbes en -ER</button>
+  <button class="tab-btn" onclick="showSong(3)">🟡 Le Futur Simple</button>
+  <button class="tab-btn" onclick="showSong(4)">🟣 Avec Être</button>
+  <button class="tab-btn" onclick="showSong(5)">🌸 中文翻译</button>
+</div>
+
+<!-- CHANSON 1 : L'IMPARFAIT -->
+<div class="song-panel panel-1 active" id="song-1">
+  <div class="song-card">
+    <div class="song-header">
+      <span class="song-emoji">🌸</span>
+      <div class="song-title">L'Imparfait</div>
+      <div class="song-subtitle">Les terminaisons de l'imparfait</div>
+    </div>
+    <div class="lyrics">
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain</div>
+        <p>
+          L'imparfait, l'imparfait <strong>A-I-S &nbsp; A-I-S &nbsp; A-I-T</strong><br>
+          L'imparfait, l'imparfait <strong>I-O-N-S, I-E-Z, A-I-E-N-T</strong>
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 1</div>
+        <p>
+          Si tu veux pouvoir raconter des histoires ou des contes de fées,<br>
+          faudra savoir conjuguer chaque verbe à ce temps du passé.
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain</div>
+        <p>
+          L'imparfait, l'imparfait <strong>A-I-S &nbsp; A-I-S &nbsp; A-I-T</strong><br>
+          L'imparfait, l'imparfait <strong>I-O-N-S &nbsp; I-E-Z &nbsp; A-I-E-N-T</strong>
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 2 — Le truc d'expert</div>
+        <p>
+          Pour t'aider, voici un truc d'expert, prends la première personne du pluriel.<br>
+          Conjugue le verbe de ton choix au présent.<br>
+          Nous <strong>saut</strong>ons ! On remplace la terminaison.
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Exemple : SAUTER</div>
+        <p>
+          L'imparfait, l'imparfait<br>
+          Je <strong>sautais</strong>, tu <strong>sautais</strong>, il <strong>sautait</strong><br>
+          L'imparfait, l'imparfait<br>
+          Nous <strong>sautions</strong>, vous <strong>sautiez</strong>, ils <strong>sautaient</strong>
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">⚠️ Exception : le verbe ÊTRE</div>
+        <p>
+          Attention, à la seule exception, le verbe être, nous sommes :<br>
+          Je sommais, tu sommais, il sommait.<br>
+          <strong>Non, non, non !</strong><br><br>
+          L'imparfait du verbe être : <strong>j'étais</strong>, tu <strong>étais</strong>, il <strong>était</strong>.<br>
+          L'imparfait, l'imparfait : nous <strong>étions</strong>, vous <strong>étiez</strong>, ils <strong>étaient</strong>.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CHANSON 2 : VERBES EN -ER -->
+<div class="song-panel panel-2" id="song-2">
+  <div class="song-card">
+    <div class="song-header">
+      <span class="song-emoji">💃</span>
+      <div class="song-title">Danser</div>
+      <div class="song-subtitle">Les verbes réguliers en -ER au présent</div>
+    </div>
+    <div class="lyrics">
+
+      <div class="block">
+        <div class="block-label">Couplet 1</div>
+        <p>
+          Je danse <strong>"E"</strong><br>
+          Tu danses <strong>"ES"</strong><br>
+          Il danse <strong>"E"</strong><br>
+          Elle danse <strong>"E"</strong><br>
+          On danse <strong>"E"</strong><br>
+          On danse <strong>"E"</strong>
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain</div>
+        <p>
+          Les verbes réguliers, c'est pas compliqué<br>
+          Chanter, danser, aimer,<br>
+          Ils sont tous réguliers
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 2</div>
+        <p>
+          Nous dansons <strong>"ONS"</strong><br>
+          Vous dansez <strong>"EZ"</strong><br>
+          Ils dansent <strong>"ENT", "ENT"</strong>
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain</div>
+        <p>
+          Les verbes réguliers, c'est pas compliqué<br>
+          Chanter, danser, aimer,<br>
+          Ils sont tous réguliers
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 3</div>
+        <p>
+          Je danse <strong>"E"</strong><br>
+          Tu danses <strong>"ES"</strong><br>
+          Il danse <strong>"E"</strong><br>
+          Elle danse <strong>"E"</strong><br>
+          On danse <strong>"E"</strong><br>
+          On danse <strong>"E"</strong>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CHANSON 3 : FUTUR SIMPLE -->
+<div class="song-panel panel-3" id="song-3">
+  <div class="song-card">
+    <div class="song-header">
+      <span class="song-emoji">🚀</span>
+      <div class="song-title">Le Futur Simple</div>
+      <div class="song-subtitle">Parler à demain… ou après-demain !</div>
+    </div>
+    <div class="lyrics">
+
+      <div class="block">
+        <div class="block-label">Intro</div>
+        <p>
+          Le futur simple est un temps de l'indicatif<br>
+          Pour l'apprendre, besoin d'aucun motif<br>
+          Il te suffit de parler à demain<br>
+          Ou tu préfères après-demain
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Les terminaisons</div>
+        <p>
+          1ʳᵉ personne : <strong>R-A-I</strong> → je ser<strong>ai</strong><br>
+          2ᵉ personne : <strong>R-A-S</strong> → tu ser<strong>as</strong>, tu croir<strong>as</strong>, tu l'aur<strong>as</strong><br>
+          C'est pas compliqué !
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet — Toutes les personnes</div>
+        <p>
+          3ᵉ personne : il, elle ou on → <strong>R-A</strong><br>
+          Il fer<strong>a</strong>, chanter<strong>a</strong>, elle décidera, on s'amus<strong>era</strong><br><br>
+          1ʳᵉ personne du pluriel → <strong>RONS</strong><br>
+          2ᵉ personne du pluriel → <strong>REZ</strong><br>
+          Et pour ils / elles au pluriel → <strong>RONT</strong>
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Récapitulatif</div>
+        <p>
+          Je ser<strong>ai</strong> &nbsp;·&nbsp; Tu ser<strong>as</strong> &nbsp;·&nbsp; Il / Elle ser<strong>a</strong><br>
+          Nous ser<strong>ons</strong> &nbsp;·&nbsp; Vous ser<strong>ez</strong> &nbsp;·&nbsp; Ils ser<strong>ont</strong>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CHANSON 4 : AVEC ÊTRE -->
+<div class="song-panel panel-4" id="song-4">
+  <div class="song-card">
+    <div class="song-header">
+      <span class="song-emoji">✈️</span>
+      <div class="song-title">Avec Être</div>
+      <div class="song-subtitle">Le passé composé avec l'auxiliaire ÊTRE</div>
+    </div>
+    <div class="lyrics">
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain</div>
+        <p>
+          Avec <strong>ÊTRE</strong>, je voyage dans le passé composé<br>
+          14 verbes dans le paysage<br>
+          Pronominaux<br>
+          Verbes composés
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 1 — Les 14 verbes</div>
+        <p>
+          Je suis <strong>née</strong> &nbsp;· Puis, j'ai <strong>grandi</strong><br>
+          Je suis <strong>allée</strong> &nbsp;· Je suis <strong>venue</strong><br>
+          Je suis <strong>arrivée</strong> &nbsp;· Je suis <strong>partie</strong><br>
+          Je suis <strong>entrée</strong> &nbsp;· Je suis <strong>sortie</strong><br>
+          Je suis <strong>montée</strong> &nbsp;· Je suis <strong>descendue</strong><br>
+          Je suis <strong>tombée</strong> &nbsp;· Je suis <strong>restée</strong><br>
+          Je suis <strong>passée</strong> &nbsp;· Je suis <strong>retournée</strong><br>
+          Je suis <strong>rentrée</strong><br>
+          J'ai tout <strong>appris</strong> !
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain × 2</div>
+        <p>
+          Avec <strong>ÊTRE</strong>, je voyage dans le passé composé<br>
+          14 verbes dans le paysage<br>
+          Pronominaux<br>
+          Verbes composés
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 2 — Les verbes composés</div>
+        <p>
+          Je suis <strong>devenue</strong> &nbsp;· Je suis <strong>revenue</strong><br>
+          Je suis <strong>repartie</strong><br>
+          Je suis <strong>passée</strong> &nbsp;· Je suis <strong>retournée</strong><br>
+          Je suis <strong>rentrée</strong><br>
+          Et dans ma vie, j'ai tout <strong>appris</strong>
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain × 2</div>
+        <p>
+          Avec <strong>ÊTRE</strong>, je voyage dans le passé composé<br>
+          14 verbes dans le paysage<br>
+          Pronominaux<br>
+          Verbes composés
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Couplet 3 — Les pronominaux</div>
+        <p>
+          Je me suis <strong>levée</strong><br>
+          Je me suis <strong>lavée</strong><br>
+          Je me suis <strong>habillée</strong><br>
+          Je me suis <strong>amusée</strong><br><br>
+          Tous les pronominaux sans exception<br>
+          Se conjuguent avec être, c'est la leçon
+        </p>
+      </div>
+
+      <div class="refrain-block">
+        <div class="block-label">🎵 Refrain × 2 — Final</div>
+        <p>
+          Avec <strong>ÊTRE</strong>, je voyage dans le passé composé<br>
+          14 verbes dans le paysage<br>
+          Pronominaux<br>
+          Verbes composés
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  © Marie Bérard pour ressourcetonfle.com — Karaoké des Chansons de Conjugaison
+</footer>
+
+<!-- ONGLET 5 : TRADUCTIONS CHINOISES -->
+<div class="song-panel panel-5" id="song-5">
+  <div class="song-card">
+    <div class="song-header">
+      <span class="song-emoji">🌸</span>
+      <div class="song-title">中文翻译</div>
+      <div class="song-subtitle">四首歌曲的中文翻译 — Traductions des 4 chansons</div>
+    </div>
+    <div class="lyrics">
+
+      <!-- CHANSON 1 -->
+      <div class="refrain-block">
+        <div class="block-label">🔴 第一首 — L'Imparfait（未完成过去时）</div>
+        <p>
+          <strong>未完成过去时，未完成过去时</strong><br>
+          A-I-S &nbsp; A-I-S &nbsp; A-I-T<br>
+          未完成过去时，未完成过去时<br>
+          I-O-N-S, I-E-Z, A-I-E-N-T
+        </p>
+      </div>
+
+      <div class="block">
+        <p>
+          如果你想讲故事或童话，<br>
+          你需要学会把每个动词变成这个过去时态。<br><br>
+          这里有一个专家技巧：取复数第一人称，<br>
+          在现在时态中变位你选的动词。<br>
+          Nous <strong>sautons</strong>（我们跳）！然后替换词尾。<br><br>
+          未完成过去时，未完成过去时<br>
+          Je <strong>sautais</strong>（我跳）, tu <strong>sautais</strong>（你跳）, il <strong>sautait</strong>（他跳）<br>
+          Nous <strong>sautions</strong>（我们跳）, vous <strong>sautiez</strong>（你们跳）, ils <strong>sautaient</strong>（他们跳）
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">⚠️ 注意！动词 ÊTRE（是/存在）的例外</div>
+        <p>
+          注意，唯一的例外是动词 être，nous sommes :<br>
+          Je sommais, tu sommais… <strong>不对，不对，不对！</strong><br><br>
+          ÊTRE 的未完成过去时：<br>
+          <strong>j'étais</strong>（我是）, tu <strong>étais</strong>（你是）, il <strong>était</strong>（他是）<br>
+          nous <strong>étions</strong>（我们是）, vous <strong>étiez</strong>（你们是）, ils <strong>étaient</strong>（他们是）
+        </p>
+      </div>
+
+      <!-- CHANSON 2 -->
+      <div class="refrain-block">
+        <div class="block-label">🟢 第二首 — Danser（跳舞 / -ER 规则动词）</div>
+        <p>
+          我跳舞 <strong>"E"</strong>（词尾加 E）<br>
+          你跳舞 <strong>"ES"</strong>（词尾加 ES）<br>
+          他跳舞 <strong>"E"</strong> · 她跳舞 <strong>"E"</strong> · 我们跳舞 <strong>"E"</strong><br><br>
+          规则动词，不复杂！<br>
+          chanter（唱歌）, danser（跳舞）, aimer（喜欢），<br>
+          它们都是规则动词
+        </p>
+      </div>
+
+      <div class="block">
+        <p>
+          Nous dansons <strong>"ONS"</strong>（我们跳舞，词尾加 ONS）<br>
+          Vous dansez <strong>"EZ"</strong>（你们跳舞，词尾加 EZ）<br>
+          Ils dansent <strong>"ENT"</strong>（他们跳舞，词尾加 ENT）
+        </p>
+      </div>
+
+      <!-- CHANSON 3 -->
+      <div class="refrain-block">
+        <div class="block-label">🟡 第三首 — Le Futur Simple（简单将来时）</div>
+        <p>
+          简单将来时是陈述式的一个时态，<br>
+          学它不需要任何理由，<br>
+          只需要谈论明天，或者后天。
+        </p>
+      </div>
+
+      <div class="block">
+        <p>
+          第一人称词尾写作 <strong>R-A-I</strong>，发音为"Ré"，例如 je ser<strong>ai</strong>（我将是）<br>
+          第二人称词尾写作 <strong>R-A-S</strong> → tu ser<strong>as</strong>（你将是）, tu croir<strong>as</strong>（你将相信）, tu l'aur<strong>as</strong>（你将拥有）<br>
+          不复杂！<br><br>
+          第三人称 il / elle / on → <strong>R-A</strong><br>
+          il fer<strong>a</strong>（他将做）, chanter<strong>a</strong>（将唱）, elle décidera（她将决定）<br><br>
+          第一人称复数 → <strong>RONS</strong> &nbsp;·&nbsp; 第二人称复数 → <strong>REZ</strong><br>
+          ils / elles 复数 → <strong>RONT</strong>
+        </p>
+      </div>
+
+      <!-- CHANSON 4 -->
+      <div class="refrain-block">
+        <div class="block-label">🟣 第四首 — Avec Être（用 ÊTRE 构成的复合过去时）</div>
+        <p>
+          用 <strong>ÊTRE</strong>（是），我在复合过去时中旅行<br>
+          风景中有 14 个动词<br>
+          代词式动词<br>
+          复合动词
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">14个动词</div>
+        <p>
+          我出生了 · 然后我长大了 · 我去了 · 我来了<br>
+          我到达了 · 我离开了 · 我进去了 · 我出来了<br>
+          我上去了 · 我下来了 · 我摔倒了 · 我留下了<br>
+          我经过了 · 我返回了 · 我回家了<br>
+          <strong>我学会了一切！</strong>
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">代词式动词（反身动词）</div>
+        <p>
+          Je me suis <strong>levée</strong>（我起床了）<br>
+          Je me suis <strong>lavée</strong>（我洗漱了）<br>
+          Je me suis <strong>habillée</strong>（我穿好衣服了）<br>
+          Je me suis <strong>amusée</strong>（我玩得很开心）<br><br>
+          所有代词式动词，无一例外，<br>
+          都用 être 变位——这就是今天的课！
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const panels = document.querySelectorAll('.song-panel');
+  const buttons = document.querySelectorAll('.tab-btn');
+  const colors = ['active-1','active-2','active-3','active-4','active-5'];
+
+  function showSong(n) {
+    panels.forEach(p => p.classList.remove('active'));
+    buttons.forEach((b) => { b.classList.remove(...colors); });
+    document.getElementById('song-' + n).classList.add('active');
+    buttons[n-1].classList.add('active-' + n);
+  }
+</script>
+</body>
+</html>
